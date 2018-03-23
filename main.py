@@ -129,7 +129,7 @@ def geneticAlgorithm(population, populationSize, n):
                 bestCost = fitnessOfChild
 
             if(fitnessOfChild==0):
-                return child
+                return bestChild
 
             if(randint(0,100)<=40):
                 child[randint(0,n-1)] = randint(0,n-1)
@@ -190,7 +190,7 @@ def hillClimbing(n, board):
 
     lowest = int((n*n)*n)
     lowestRow = 0
-    newBoard = board
+    newBoard = list(board)
 
     for col in range(n):
         for row in range(n):
@@ -207,7 +207,7 @@ def hillClimbingRandomRestart(n, board):
 
     lowest = int((n*n)*n)
     lowestRow = 0
-    newBoard = board
+    newBoard = list(board)
 
     for col in range(n):
         for row in range(n):
@@ -320,6 +320,90 @@ def __init__():
         print("Cost %s" % (cost(n,newBoard)))
 
         print("Exection time = %s" % (time.time() - gaBoard_start))
+
+    elif(command=="all"):
+        #Create a board
+        board = createBoard(n)
+
+        #HILL CLIMBING
+        print("_____Hill climbing Algorithm_____  ")
+        print("\nInitial Sate: ")
+        printBoard(n, board)
+        print("Cost %s" % (cost(n,board)))
+        hillClimb_start = time.time()
+
+        newBoard = hillClimbing(n, board)
+        i=0
+
+        #Allow to iterate 100 times or until there is no more collisions
+        while(i<100 and cost(n,newBoard)!=0):
+            newBoard = hillClimbing(n, newBoard)
+            i+=1
+
+        print("\nNew State:")
+        printBoard(n,newBoard)
+        print("Cost %s" % (cost(n,newBoard)))
+
+        print("Exection time = %s" % (time.time() - hillClimb_start))
+
+
+        #HILL CLIMBING RANDOM RESTART
+        print("\n_____Hill climbing Random Restart Algorithm_____  ")
+        print("\nInitial Sate: ")
+        printBoard(n, board)
+        print("Cost %s" % (cost(n,board)))
+        hillClimbRand_start = time.time()
+
+        newBoard2 = hillClimbingRandomRestart(n, board)
+        i=0
+
+        #Allow to iterate 100 times or until there is no more collisions
+        while(i<100 and cost(n,newBoard2)!=0):
+            newBoard = hillClimbingRandomRestart(n, newBoard2)
+            i+=1
+
+        print("\nNew State:")
+        printBoard(n,newBoard2)
+        print("Cost %s" % (cost(n,newBoard2)))
+        print("Exection time = %s" % (time.time() - hillClimbRand_start))
+
+
+
+        #SIMULATED ANNEALING
+        print("\n_____Simulated Annealing Algorithm_____  ")
+        print("\nInitial Sate: ")
+        printBoard(n, board)
+        print("Cost %s" % (cost(n,board)))
+        saBoard_start = time.time()
+
+        newBoard3 = simulatedAnnealing(n, board)
+
+        print("\nNew State:")
+        printBoard(n,newBoard3)
+        print("Cost %s" % (cost(n,newBoard3)))
+
+        print("Exection time = %s" % (time.time() - saBoard_start))
+
+
+
+        #GENETIC ALGORITHM
+        print("\n_____Genetic Algorithm_____  ")
+        print("\nInitial Sate: ")
+        printBoard(n, board)
+        print("Cost %s" % (cost(n,board)))
+        gaBoard_start = time.time()
+
+        k=200
+        population = generatePopulation(n, 200)
+
+        newBoard4 = geneticAlgorithm(population, k, n)
+
+        print("\nNew State:")
+        printBoard(n,newBoard4)
+        print("Cost %s" % (cost(n,newBoard4)))
+
+        print("Exection time = %s" % (time.time() - gaBoard_start))
+
 
 
 
