@@ -2,6 +2,7 @@ from random import *
 import random
 import time
 import math
+import sys
 
 #Returns an array of positions with 1 queen randomly placed in each "column"
 def createBoard(n):
@@ -55,42 +56,133 @@ def cost(n, newBoard):
 def prob(e, e1, T):
     return math.exp(-(e1-e)/T)
 
-def repoduce(x,y):
-    print("Hey")
+def findTwoFittest(population, populationSize, n):
+    lowest = 0;
+    lengthOfUnsorted = populationSize
 
-def geneticAlgorithm(population, cost, n):
-    newRandPop = createBoard(n)
-    while cost(population)!=0:
+    for index in range(2):
+
+        for i in range(lengthOfUnsorted):
+            c1 = cost(n,population[i])
+            c2 = cost(n,population[lowest])
+            if(c1<c2):
+                lowest = i
+
+        temp = population[lengthOfUnsorted-1];
+        population[lengthOfUnsorted-1] = population[lowest]
+        population[lowest] = temp
+
+        lengthOfUnsorted = lengthOfUnsorted - 1
+        lowest = 0
+
+    population = population[-3:populationSize]
+
+    return population;
+
+
+def repoduce(x,y,n):
+
+    crossOverPoint = randint(0,n-1)
+    temp = list(x[0:crossOverPoint])
+    x[0:crossOverPoint] = y[0:crossOverPoint]
+    y[0:crossOverPoint] = temp
+
+    c1 = cost(n,x)
+    c2 = cost(n,y)
+
+    if(c1>=c2):
+        return (x,c1)
+    else:
+        return (y,c2)
+
+def generatePopulation(n,k):
+    population = []
+    for i in range(k):
+        population.append(createBoard(n))
+
+    return population
+
+
+def geneticAlgorithm(population, populationSize, n):
+    generations = 0;
+    while True:
         newPopulation = []
-        splitNum = randint(0,n-1)
-        x = population.splice(0)
+        bestChild = 0
+        bestCost = sys.maxsize
+        if(bestCost!=sys.maxsize):
+            newPopulation.append(bestChild)
 
+        for i in range(populationSize-1):
+
+            # population = findTwoFittest(population, populationSize, n)
+
+            # populationSize -= 1
+            x = population[randint(0,populationSize-2)];
+            y = population[randint(0,populationSize-2)];
+
+            repoduceReturn = repoduce(x,y,n)
+            child = repoduceReturn[0]
+            fitnessOfChild = repoduceReturn[1]
+
+            if(fitnessOfChild<=bestCost):
+                bestChild = list(child)
+                bestCost = fitnessOfChild
+
+            if(fitnessOfChild==0):
+                return child
+
+            if(randint(0,100)<=40):
+                child[randint(0,n-1)] = randint(0,n-1)
+
+            newPopulation.append(child)
+
+        population = list(newPopulation)
+        generations += 1;
+
+        #print(generations)
+        #print(population);
 
 
 #Simulated Annealing Algorithm
 def simulatedAnnealing(n, board):
 
-    newBoard = board
+    newBoard = list(board)
     k=0
-    T=10000000;
+    T=4;
     # print(T)
-    alpha = 0.99;
+    alpha = 0.995;
 
     while T>0.00001:
+        k=0
+        while(k<n/2):
 
-        newRandomBoard = createBoard(n)
-        # newRandomBoard[col]=randint(0,n-1);
-        collisionAmount1 = int(cost(n, newBoard))
-        collisionAmount2 = int(cost(n,newRandomBoard))
-        if(collisionAmount2<=collisionAmount1):
-            newBoard = newRandomBoard
-            #print("Not prob")
-        elif(prob(collisionAmount1, collisionAmount2, T) >= random.uniform(0, 1)):
-            #print("Prob")
-            newBoard = newRandomBoard
+            newBoardRand = list(newBoard)
+            newBoardRand[randint(0,n-1)] = randint(0,n-1)
+            # newRandomBoard[col]=randint(0,n-1);
+            collisionAmount1 = int(cost(n, newBoard))
+            collisionAmount2 = int(cost(n,newBoardRand))
 
+            # print(collisionAmount2-collisionAmount1)
+
+            if(collisionAmount2==0):
+                print(T)
+                return newBoardRand
+
+            if(collisionAmount1==0):
+                print(T)
+                return newBoard
+
+            if(collisionAmount2<=collisionAmount1):
+                newBoard = list(newBoardRand)
+                #print("Not prob")
+            elif(prob(collisionAmount1, collisionAmount2, T) >= random.uniform(0, 1)):
+                #print("Prob")
+                newBoard = list(newBoardRand)
+
+
+            k+=1
         T = alpha*T
-        k+=1
+    print(T)
     return newBoard
 
 #Hill Climbing Algorithm
@@ -218,7 +310,10 @@ def __init__():
         print("Cost %s" % (cost(n,gaBoard)))
         gaBoard_start = time.time()
 
-        newBoard = geneticAlgorithm(gaBoard, cost, n)
+        k=200
+        population = generatePopulation(n, 200)
+
+        newBoard = geneticAlgorithm(population, k, n)
 
         print("\nNew State:")
         printBoard(n,newBoard)
