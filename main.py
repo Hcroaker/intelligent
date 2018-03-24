@@ -100,13 +100,13 @@ def generatePopulation(n,k):
     for i in range(k):
         population.append(createBoard(n))
 
-    return population
+    return list(population)
 
 
 def geneticAlgorithm(population, populationSize, n):
     generations = 0;
     while True:
-        newPopulation = []
+        newPopulation = list([])
         bestChild = 0
         bestCost = sys.maxsize
         if(bestCost!=sys.maxsize):
@@ -129,15 +129,19 @@ def geneticAlgorithm(population, populationSize, n):
                 bestCost = fitnessOfChild
 
             if(fitnessOfChild==0):
-                return bestChild
+                return list(bestChild),generations
 
             if(randint(0,100)<=40):
                 child[randint(0,n-1)] = randint(0,n-1)
+
 
             newPopulation.append(child)
 
         population = list(newPopulation)
         generations += 1;
+
+        # print (generations)
+        # print(populationSize)
 
         #print(generations)
         #print(population);
@@ -165,11 +169,11 @@ def simulatedAnnealing(n, board):
             # print(collisionAmount2-collisionAmount1)
 
             if(collisionAmount2==0):
-                print(T)
+                # print(T)
                 return newBoardRand
 
             if(collisionAmount1==0):
-                print(T)
+                # print(T)
                 return newBoard
 
             if(collisionAmount2<=collisionAmount1):
@@ -310,20 +314,23 @@ def __init__():
         print("Cost %s" % (cost(n,gaBoard)))
         gaBoard_start = time.time()
 
-        k=200
+        k=100
         population = generatePopulation(n, 200)
 
         newBoard = geneticAlgorithm(population, k, n)
 
         print("\nNew State:")
-        printBoard(n,newBoard)
-        print("Cost %s" % (cost(n,newBoard)))
+        printBoard(n,newBoard[0])
+        print("Cost %s" % (cost(n,newBoard[0])))
+        print("Generations: %s" % (newBoard[1]))
 
         print("Exection time = %s" % (time.time() - gaBoard_start))
 
     elif(command=="all"):
         #Create a board
         board = createBoard(n)
+
+
 
         #HILL CLIMBING
         print("_____Hill climbing Algorithm_____  ")
@@ -347,8 +354,9 @@ def __init__():
         print("Exection time = %s" % (time.time() - hillClimb_start))
 
 
+
         #HILL CLIMBING RANDOM RESTART
-        print("\n_____Hill climbing Random Restart Algorithm_____  ")
+        print("\n\n_____Hill climbing Random Restart Algorithm_____  ")
         print("\nInitial Sate: ")
         printBoard(n, board)
         print("Cost %s" % (cost(n,board)))
@@ -369,8 +377,9 @@ def __init__():
 
 
 
+
         #SIMULATED ANNEALING
-        print("\n_____Simulated Annealing Algorithm_____  ")
+        print("\n\n_____Simulated Annealing Algorithm_____  ")
         print("\nInitial Sate: ")
         printBoard(n, board)
         print("Cost %s" % (cost(n,board)))
@@ -386,8 +395,9 @@ def __init__():
 
 
 
+
         #GENETIC ALGORITHM
-        print("\n_____Genetic Algorithm_____  ")
+        print("\n\n_____Genetic Algorithm_____  ")
         print("\nInitial Sate: ")
         printBoard(n, board)
         print("Cost %s" % (cost(n,board)))
@@ -399,8 +409,9 @@ def __init__():
         newBoard4 = geneticAlgorithm(population, k, n)
 
         print("\nNew State:")
-        printBoard(n,newBoard4)
-        print("Cost %s" % (cost(n,newBoard4)))
+        printBoard(n,newBoard4[0])
+        print("Cost %s" % (cost(n,newBoard4[0])))
+        print("Generations: %s" % (newBoard4[1]))
 
         print("Exection time = %s" % (time.time() - gaBoard_start))
 
