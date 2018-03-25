@@ -496,6 +496,7 @@ def __init__():
 
     # Run all the algorthims on the same board
     elif(command=="all"):
+        
         #Create a board
         board = createBoard(n)
 
